@@ -2,11 +2,16 @@ package main
 
 import (
 	"flag"
+	"os"
 
 	"github.com/ifty123/simple_online_store/database"
 	"github.com/ifty123/simple_online_store/database/migration"
 	"github.com/ifty123/simple_online_store/database/seeder"
+	"github.com/ifty123/simple_online_store/internal/factory"
+	"github.com/ifty123/simple_online_store/internal/http"
+	"github.com/ifty123/simple_online_store/internal/middleware"
 	"github.com/joho/godotenv"
+	"github.com/labstack/echo/v4"
 )
 
 func init() {
@@ -56,4 +61,15 @@ to use this flag:
 		seeder.NewSeeder().DeleteAll()
 		seeder.NewSeeder().SeedAll()
 	}
+
+	//factory database
+	f := factory.NewFactory()
+	e := echo.New()
+
+	e.Use(middleware.CORS)
+	middleware.LogMiddlewares(e)
+
+	http.NewHttp(e, f)
+
+	e.Logger.Fatal(e.Start(":" + os.Getenv("APP_PORT")))
 }
