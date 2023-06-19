@@ -34,3 +34,21 @@ func (h *handler) LoginByEmailAndPassword(c echo.Context) error {
 
 	return response.SuccessResponse(employee).Send(c)
 }
+
+func (h *handler) RegisterByEmailAndPassword(c echo.Context) error {
+	payload := new(dto.RegisterUserReq)
+	if err := c.Bind(payload); err != nil {
+		return response.ErrorBuilder(&response.ErrorConstant.BadRequest, err).Send(c)
+	}
+
+	if err := c.Validate(payload); err != nil {
+		return response.ErrorBuilder(&response.ErrorConstant.Validation, err).Send(c)
+	}
+
+	employee, err := h.Service.RegisterByEmailAndPassword(c.Request().Context(), payload)
+	if err != nil {
+		return response.ErrorResponse(err).Send(c)
+	}
+
+	return response.SuccessResponse(employee).Send(c)
+}

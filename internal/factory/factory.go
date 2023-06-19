@@ -6,12 +6,16 @@ import (
 )
 
 type Factory struct {
-	UserRepository repository.UserRepository
+	UserRepository    repository.UserRepository
+	ProductRepository repository.ProductRepository
+	CartRepository    repository.CartRepository
 }
 
 func NewFactory() *Factory {
 	db := database.GetConnection()
 	return &Factory{
 		repository.NewUserRepository(db),
+		repository.NewProductRepository(db),
+		repository.NewCartRepository(db),
 	}
 }

@@ -18,6 +18,7 @@ type Service struct {
 
 type AuthService interface {
 	LoginByEmailAndPassword(ctx context.Context, payload *dto.EmailAndPasswordReq) (*dto.UserWithJWTResponse, error)
+	RegisterByEmailAndPassword(ctx context.Context, payload *dto.RegisterUserReq) (*dto.UserResponse, error)
 }
 
 func NewService(f *factory.Factory) AuthService {
@@ -64,4 +65,37 @@ func (s *Service) LoginByEmailAndPassword(ctx context.Context, payload *dto.Emai
 
 	return res, nil
 
+}
+
+func (s *Service) RegisterByEmailAndPassword(ctx context.Context, payload *dto.RegisterUserReq) (*dto.UserResponse, error) {
+	var res *dto.UserResponse
+
+	isExist, err := s.UserRepository.ExistByEmail(ctx, payload.Email)
+	if err != nil {
+		return res, response.ErrorBuilder(&response.ErrorConstant.InternalServerError, err)
+	}
+
+	if isExist {
+		return res, response.ErrorBuilder(&response.ErrorConstant.Duplicate, errors.New("Employee already exist"))
+	}
+
+	hashPw, err := util.HashPassword(payload.Password)
+	if err != nil {
+		return res, response.ErrorBuilder(&response.ErrorConstant.InternalServerError, err)
+	}
+
+	payload.Password = hashPw
+
+	data, err := s.UserRepository.SaveUser(ctx, payload)
+	if err != nil {
+		return res, response.ErrorBuilder(&response.ErrorConstant.InternalServerError, err)
+	}
+
+	res = &dto.UserResponse{
+		ID:       data.ID,
+		Username: data.Username,
+		Email:    data.Email,
+	}
+
+	return res, nil
 }

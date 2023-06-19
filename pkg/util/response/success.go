@@ -15,7 +15,7 @@ type successConstant struct {
 type successResponse struct {
 	Success bool                `json:"success" default:"true"`
 	Message string              `json:"message" default:"true"`
-	Meta    *dto.PaginationInfo `json:"meta"`
+	Meta    *dto.PaginationInfo `json:"meta,omitempty"`
 	Data    interface{}         `json:"data"`
 }
 
