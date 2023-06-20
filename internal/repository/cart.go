@@ -13,7 +13,9 @@ type CartRepository interface {
 	FindByUserId(ctx context.Context, userId uint) ([]model.Cart, error)
 	Destroy(ctx context.Context, cart *model.Cart) (*model.Cart, error)
 	SaveCart(ctx context.Context, cart *dto.Cart) (*model.Cart, error)
-	FindByProductId(ctx context.Context, productId uint) (*model.Cart, error)
+	FindByProductId(ctx context.Context, productId uint, userId uint) (*model.Cart, error)
+	FindById(ctx context.Context, id uint) (*model.Cart, error)
+	FindByIds(ctx context.Context, ids []uint) ([]model.Cart, error)
 }
 
 type cart struct {
@@ -43,9 +45,17 @@ func (e *cart) FindByUserId(ctx context.Context, userId uint) ([]model.Cart, err
 	return prd, err
 }
 
-func (e *cart) FindByProductId(ctx context.Context, productId uint) (*model.Cart, error) {
+func (e *cart) FindByProductId(ctx context.Context, productId uint, userId uint) (*model.Cart, error) {
 	var prd model.Cart
-	q := e.Db.WithContext(ctx).Model(&model.Cart{}).Where("product_id = ?", productId)
+	q := e.Db.WithContext(ctx).Model(&model.Cart{}).Where("product_id = ?", productId).Where("user_id = ?", userId)
+
+	err := q.First(&prd).Error
+	return &prd, err
+}
+
+func (e *cart) FindById(ctx context.Context, id uint) (*model.Cart, error) {
+	var prd model.Cart
+	q := e.Db.WithContext(ctx).Model(&model.Cart{}).Where("id = ?", id)
 
 	err := q.First(&prd).Error
 	return &prd, err
@@ -71,4 +81,12 @@ func (e *cart) SaveCart(ctx context.Context, cart *dto.Cart) (*model.Cart, error
 	}
 
 	return &newCart, nil
+}
+
+func (e *cart) FindByIds(ctx context.Context, ids []uint) ([]model.Cart, error) {
+	var prd []model.Cart
+	q := e.Db.WithContext(ctx).Model(&model.Cart{}).Where("id IN (?)", ids)
+
+	err := q.Find(&prd).Error
+	return prd, err
 }

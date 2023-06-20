@@ -17,6 +17,12 @@ func productSeeder(db *gorm.DB) {
 			Common:       model.Common{ID: 1, CreatedAt: now, UpdatedAt: now},
 			CategoryId:   1,
 		},
+		{
+			NameProduct:  "Sport Air",
+			PriceProduct: 100000,
+			Common:       model.Common{ID: 2, CreatedAt: now, UpdatedAt: now},
+			CategoryId:   1,
+		},
 	}
 
 	if err := db.Create(&products).Error; err != nil {

@@ -7,6 +7,7 @@ import (
 	"github.com/ifty123/simple_online_store/internal/dto"
 	"github.com/ifty123/simple_online_store/internal/factory"
 	"github.com/ifty123/simple_online_store/internal/repository"
+	pkgdto "github.com/ifty123/simple_online_store/pkg/dto"
 
 	"github.com/ifty123/simple_online_store/pkg/util/response"
 )
@@ -19,6 +20,7 @@ type Service struct {
 type CartService interface {
 	FindCartByUserId(ctx context.Context, userId uint) ([]*dto.CartResponse, error)
 	SaveCart(ctx context.Context, payload *dto.Cart) (*dto.CartResponse, error)
+	DeleteProductById(ctx context.Context, payload *pkgdto.ByIDRequest) (*dto.CartDeleteResponse, error)
 }
 
 func Newservice(f *factory.Factory) Service {
@@ -32,7 +34,7 @@ func (s *Service) SaveCart(ctx context.Context, payload *dto.Cart) (*dto.CartRes
 
 	var res *dto.CartResponse
 
-	cart, err := s.CartRepository.FindByProductId(ctx, payload.ProductId)
+	cart, err := s.CartRepository.FindByProductId(ctx, payload.ProductId, payload.UserId)
 	if err != nil {
 		log.Println("error no found : ", err)
 	}
@@ -102,4 +104,26 @@ func (s *Service) FindCartByUserId(ctx context.Context, userId uint) ([]*dto.Car
 	}
 
 	return productRes, nil
+}
+
+func (s *Service) DeleteProductById(ctx context.Context, payload *pkgdto.ByIDRequest) (*dto.CartDeleteResponse, error) {
+
+	//find by id
+	cart, err := s.CartRepository.FindById(ctx, payload.ID)
+	if err != nil {
+		return nil, response.ErrorBuilder(&response.ErrorConstant.InternalServerError, err)
+	}
+
+	_, err = s.CartRepository.Destroy(ctx, cart)
+	if err != nil {
+		return nil, response.ErrorBuilder(&response.ErrorConstant.InternalServerError, err)
+	}
+
+	result := &dto.CartDeleteResponse{
+		ID:        cart.ID,
+		ProductId: cart.ProductId,
+		DeletedAt: cart.DeletedAt,
+	}
+
+	return result, nil
 }

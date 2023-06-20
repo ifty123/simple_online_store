@@ -1,5 +1,7 @@
 package dto
 
+import "gorm.io/gorm"
+
 type CartResponse struct {
 	ID       uint            `json:"id"`
 	Username string          `json:"username,omitempty"`
@@ -13,4 +15,10 @@ type Cart struct {
 	ProductId uint `json:"product_id"`
 	Quantity  int  `json:"quantity"`
 	Price     int64
+}
+
+type CartDeleteResponse struct {
+	ID        uint            `json:"id"`
+	ProductId uint            `json:"product_id"`
+	DeletedAt *gorm.DeletedAt `json:"deleted_at"`
 }

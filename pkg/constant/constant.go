@@ -5,5 +5,5 @@ import (
 )
 
 var (
-	RECORD_NOT_FOUND   = gorm.ErrRecordNotFound
+	RECORD_NOT_FOUND = gorm.ErrRecordNotFound
 )

@@ -4,6 +4,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/ifty123/simple_online_store/internal/dto"
 	"github.com/ifty123/simple_online_store/internal/model"
 	"gorm.io/gorm"
 )
@@ -14,7 +15,7 @@ func transactionSeeder(db *gorm.DB) {
 		{
 			UserId:            1,
 			TotalTransaction:  120000,
-			StatusTransaction: "belum dibayar",
+			StatusTransaction: dto.BELUM_DIBAYAR,
 			Common:            model.Common{ID: 1, CreatedAt: now, UpdatedAt: now},
 		},
 	}

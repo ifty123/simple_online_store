@@ -6,9 +6,10 @@ import (
 )
 
 type Factory struct {
-	UserRepository    repository.UserRepository
-	ProductRepository repository.ProductRepository
-	CartRepository    repository.CartRepository
+	UserRepository        repository.UserRepository
+	ProductRepository     repository.ProductRepository
+	CartRepository        repository.CartRepository
+	TransactionRepository repository.TransactionRepository
 }
 
 func NewFactory() *Factory {
@@ -17,5 +18,6 @@ func NewFactory() *Factory {
 		repository.NewUserRepository(db),
 		repository.NewProductRepository(db),
 		repository.NewCartRepository(db),
+		repository.NewTransactionRepository(db),
 	}
 }

@@ -1,4 +1,4 @@
-package cart
+package transaction
 
 import (
 	"github.com/ifty123/simple_online_store/internal/dto"
@@ -11,7 +11,5 @@ func (h *handler) Route(g *echo.Group) {
 
 	g.Use(middleware.JWTMiddleware(dto.JWTClaims{}, util.JWT_SECRET))
 
-	g.GET("", h.GetCart)
-	g.PUT("/add", h.SaveCart)
-	g.DELETE("/delete/:id", h.DeleteCartById)
+	g.POST("/add", h.SaveTransaction)
 }

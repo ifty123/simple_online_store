@@ -14,6 +14,8 @@ func transactionDetailSeeder(db *gorm.DB) {
 		{
 			TransactionId: 1,
 			ProductId:     1,
+			Quantity:      4,
+			PriceTotal:    480000,
 			Common:        model.Common{ID: 1, CreatedAt: now, UpdatedAt: now},
 		},
 	}
