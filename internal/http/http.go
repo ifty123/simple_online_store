@@ -3,6 +3,8 @@ package http
 import (
 	"github.com/go-playground/validator"
 	"github.com/ifty123/simple_online_store/internal/app/auth"
+	"github.com/ifty123/simple_online_store/internal/app/cart"
+	"github.com/ifty123/simple_online_store/internal/app/product"
 	"github.com/ifty123/simple_online_store/internal/factory"
 	"github.com/ifty123/simple_online_store/pkg/util"
 	"github.com/labstack/echo/v4"
@@ -16,4 +18,6 @@ func NewHttp(e *echo.Echo, f *factory.Factory) {
 	})
 	v1 := e.Group("/api/v1")
 	auth.NewHandler(f).Route(v1.Group("/auth"))
+	product.NewHandler(f).Route(v1.Group("/product"))
+	cart.NewHandler(f).Route(v1.Group("/cart"))
 }

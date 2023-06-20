@@ -12,10 +12,11 @@ func cartSeeder(db *gorm.DB) {
 	now := time.Now()
 	var carts = []model.Cart{
 		{
-			UserId:    1,
-			ProductId: 1,
-			Quantity:  1,
-			Common:    model.Common{ID: 1, CreatedAt: now, UpdatedAt: now},
+			UserId:     1,
+			ProductId:  1,
+			Quantity:   1,
+			PriceTotal: 12000,
+			Common:     model.Common{ID: 1, CreatedAt: now, UpdatedAt: now},
 		},
 	}
 

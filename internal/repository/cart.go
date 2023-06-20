@@ -3,14 +3,17 @@ package repository
 import (
 	"context"
 
+	"github.com/ifty123/simple_online_store/internal/dto"
 	"github.com/ifty123/simple_online_store/internal/model"
 	"gorm.io/gorm"
 )
 
 type CartRepository interface {
-	UpdateQuantity(ctx context.Context, id uint, quantity int) (*model.Cart, error)
-	FindByUserId(ctx context.Context, userId uint) (*model.Cart, error)
+	UpdateCart(ctx context.Context, id uint, payload *model.Cart) (*model.Cart, error)
+	FindByUserId(ctx context.Context, userId uint) ([]model.Cart, error)
 	Destroy(ctx context.Context, cart *model.Cart) (*model.Cart, error)
+	SaveCart(ctx context.Context, cart *dto.Cart) (*model.Cart, error)
+	FindByProductId(ctx context.Context, productId uint) (*model.Cart, error)
 }
 
 type cart struct {
@@ -23,19 +26,26 @@ func NewCartRepository(db *gorm.DB) *cart {
 	}
 }
 
-func (e *cart) UpdateQuantity(ctx context.Context, id uint, quantity int) (*model.Cart, error) {
-	var prd model.Cart
-	q := e.Db.WithContext(ctx).Model(&model.Product{}).Where("id = ?", id)
+func (e *cart) UpdateCart(ctx context.Context, id uint, payload *model.Cart) (*model.Cart, error) {
 
-	err := q.UpdateColumn("quantity", quantity).Error
-	return &prd, err
+	result := e.Db.WithContext(ctx).Model(&model.Cart{}).Where("id = ?", id).Updates(&payload)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return payload, nil
 }
 
-func (e *cart) FindByUserId(ctx context.Context, userId uint) (*model.Cart, error) {
-	var prd model.Cart
-	q := e.Db.WithContext(ctx).Model(&model.Product{}).Where("user_id = ?", userId)
+func (e *cart) FindByUserId(ctx context.Context, userId uint) ([]model.Cart, error) {
+	var prd []model.Cart
+	q := e.Db.WithContext(ctx).Preload("Product").Model(&model.Cart{}).Where("user_id = ?", userId)
 
-	q = q.Preload("Product")
+	err := q.Find(&prd).Error
+	return prd, err
+}
+
+func (e *cart) FindByProductId(ctx context.Context, productId uint) (*model.Cart, error) {
+	var prd model.Cart
+	q := e.Db.WithContext(ctx).Model(&model.Cart{}).Where("product_id = ?", productId)
 
 	err := q.First(&prd).Error
 	return &prd, err
@@ -46,4 +56,19 @@ func (e *cart) Destroy(ctx context.Context, cart *model.Cart) (*model.Cart, erro
 		return nil, err
 	}
 	return cart, nil
+}
+
+func (e *cart) SaveCart(ctx context.Context, cart *dto.Cart) (*model.Cart, error) {
+	newCart := model.Cart{
+		UserId:     cart.UserId,
+		ProductId:  cart.ProductId,
+		Quantity:   cart.Quantity,
+		PriceTotal: cart.Price,
+	}
+
+	if err := e.Db.WithContext(ctx).Save(&newCart).Error; err != nil {
+		return &newCart, err
+	}
+
+	return &newCart, nil
 }

@@ -15,8 +15,8 @@ func NewSeeder() *seed {
 
 func (s *seed) SeedAll() {
 	userSeeder(s.DB)
-	productSeeder(s.DB)
 	categorySeeder(s.DB)
+	productSeeder(s.DB)
 	cartSeeder(s.DB)
 	transactionSeeder(s.DB)
 	transactionDetailSeeder(s.DB)

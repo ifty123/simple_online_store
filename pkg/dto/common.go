@@ -11,9 +11,8 @@ type Pagination struct {
 
 type SearchGetRequest struct {
 	Pagination
-	Search   string   `query:"search"`
-	AscField []string `query:"asc_field"`
-	DscField []string `query:"dsc_field"`
+	Search   string `query:"search"`
+	Category uint   `query:"category"`
 }
 
 type SearchGetResponse[T any] struct {
@@ -24,7 +23,7 @@ type SearchGetResponse[T any] struct {
 type PaginationInfo struct {
 	*Pagination
 	Count       int  `json:"count"`
-	MoreRecords bool `json:"more_records"`
+	MoreRecords bool `json:"more_records,omitempty"`
 	TotalPage   int  `json:"total_page"`
 }
 

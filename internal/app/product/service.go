@@ -38,6 +38,7 @@ func (s *Service) FindByCategory(ctx context.Context, category uint, pagination 
 			ID:          i.ID,
 			NameProduct: i.NameProduct,
 			Price:       i.PriceProduct,
+			Category:    i.Category.NameCategory,
 		})
 	}
 

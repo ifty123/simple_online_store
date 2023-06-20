@@ -11,8 +11,8 @@ import (
 
 var tables = []interface{}{
 	&model.User{},
-	&model.Product{},
 	&model.Category{},
+	&model.Product{},
 	&model.Cart{},
 	&model.Transaction{},
 	&model.TransactionDetail{},

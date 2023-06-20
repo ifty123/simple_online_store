@@ -28,7 +28,7 @@ func (e *product) FindByCategory(ctx context.Context, category uint, pagination 
 	var user []model.Product
 	var count int64
 
-	query := e.Db.WithContext(ctx).Model(&model.Product{})
+	query := e.Db.WithContext(ctx).Preload("Category").Model(&model.Product{})
 
 	if category != 0 {
 		query = query.Where("category_id = ?", category)
