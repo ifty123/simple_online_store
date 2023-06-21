@@ -50,6 +50,7 @@ func (e *user) SaveUser(ctx context.Context, user *dto.RegisterUserReq) (*model.
 	newUser := model.User{
 		Username: user.Username,
 		Email:    user.Email,
+		Password: user.Password,
 	}
 
 	if err := e.Db.WithContext(ctx).Save(&newUser).Error; err != nil {
