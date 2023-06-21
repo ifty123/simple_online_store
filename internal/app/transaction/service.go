@@ -21,6 +21,7 @@ type Service struct {
 type CartService interface {
 	SaveTransaction(ctx context.Context, payload *dto.TransactionReq) (*dto.TransactionResponse, error)
 	FindTransactionByUserId(ctx context.Context, userId uint) ([]*dto.TransactionResponse, error)
+	UpdateTransactionById(ctx context.Context, userId, transactionId uint) (*dto.TransactionResponse, error)
 }
 
 func Newservice(f *factory.Factory) Service {
@@ -142,4 +143,27 @@ func (s *Service) FindTransactionByUserId(ctx context.Context, userId uint) ([]*
 	}
 
 	return productRes, nil
+}
+
+func (s *Service) UpdateTransactionById(ctx context.Context, userId, transactionId uint) (*dto.TransactionResponse, error) {
+
+	transactions, err := s.TrasactionRepository.FindById(ctx, transactionId)
+	if err != nil {
+		return nil, response.ErrorBuilder(&response.ErrorConstant.InternalServerError, err)
+	}
+
+	//update status ke bayar
+	transactions.StatusTransaction = dto.SUDAH_DIBAYAR
+
+	_, err = s.TrasactionRepository.UpdateTransaction(ctx, transactionId, &transactions)
+	if err != nil {
+		return nil, response.ErrorBuilder(&response.ErrorConstant.InternalServerError, err)
+	}
+
+	res := &dto.TransactionResponse{
+		ID:                transactions.ID,
+		Price:             transactions.TotalTransaction,
+		StatusTransaction: transactions.StatusTransaction,
+	}
+	return res, nil
 }

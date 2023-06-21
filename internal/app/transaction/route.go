@@ -13,4 +13,5 @@ func (h *handler) Route(g *echo.Group) {
 
 	g.POST("/add", h.SaveTransaction)
 	g.GET("", h.GetTransactionByUserId)
+	g.PUT("/update/:id", h.UpdateTransactionById)
 }
