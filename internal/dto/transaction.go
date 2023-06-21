@@ -13,7 +13,7 @@ type TransactionResponse struct {
 
 type TransactionReq struct {
 	UserId uint
-	Cart   []Cart
+	// Cart   []Cart
 	CartId []uint `json:"cart_id" validate:"required"`
 	Total  int64
 }

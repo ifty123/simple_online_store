@@ -2,7 +2,7 @@ package transaction
 
 import (
 	"context"
-	"log"
+	"errors"
 
 	"github.com/ifty123/simple_online_store/internal/dto"
 	"github.com/ifty123/simple_online_store/internal/factory"
@@ -12,20 +12,23 @@ import (
 )
 
 type Service struct {
-	TrasactionRepository repository.TransactionRepository
-	ProductRepository    repository.ProductRepository
-	CartRepository       repository.CartRepository
+	TrasactionRepository         repository.TransactionRepository
+	ProductRepository            repository.ProductRepository
+	CartRepository               repository.CartRepository
+	TransactionDetailsRepository repository.TransactionDetailsRepository
 }
 
 type CartService interface {
 	SaveTransaction(ctx context.Context, payload *dto.TransactionReq) (*dto.TransactionResponse, error)
+	FindTransactionByUserId(ctx context.Context, userId uint) ([]*dto.TransactionResponse, error)
 }
 
 func Newservice(f *factory.Factory) Service {
 	return Service{
-		TrasactionRepository: f.TransactionRepository,
-		ProductRepository:    f.ProductRepository,
-		CartRepository:       f.CartRepository,
+		TrasactionRepository:         f.TransactionRepository,
+		ProductRepository:            f.ProductRepository,
+		CartRepository:               f.CartRepository,
+		TransactionDetailsRepository: f.TransactionDetailsRepository,
 	}
 }
 
@@ -41,16 +44,24 @@ func (s *Service) SaveTransaction(ctx context.Context, payload *dto.TransactionR
 		return res, response.ErrorBuilder(&response.ErrorConstant.InternalServerError, err)
 	}
 
+	if len(cart) == 0 {
+		return res, response.ErrorBuilder(&response.ErrorConstant.InternalServerError, errors.New("Cart not found"))
+	}
+
 	var productId []uint
 	for _, i := range cart {
-		productId = append(productId, i.ProductId)
-		productRes[i.ProductId] = &dto.ProductDetailResponse{
-			ID:         i.ProductId,
-			PriceTotal: i.PriceTotal,
-			Quantity:   i.Quantity,
+
+		if _, ok := productRes[i.ProductId]; !ok && i.ProductId != 0 {
+			productId = append(productId, i.ProductId)
+			productRes[i.ProductId] = &dto.ProductDetailResponse{
+				ID:         i.ProductId,
+				PriceTotal: i.PriceTotal,
+				Quantity:   i.Quantity,
+			}
+
+			payload.Total += i.PriceTotal
 		}
 
-		payload.Total += i.PriceTotal
 	}
 
 	//find product by id
@@ -60,7 +71,6 @@ func (s *Service) SaveTransaction(ctx context.Context, payload *dto.TransactionR
 	}
 
 	for _, i := range product {
-		log.Println("nama produk :", i.NameProduct, " - id :", i.ID)
 		if _, ok := productRes[i.ID]; ok {
 			productRes[i.ID].NameProduct = i.NameProduct
 			productRes[i.ID].Price = i.PriceProduct
@@ -70,9 +80,16 @@ func (s *Service) SaveTransaction(ctx context.Context, payload *dto.TransactionR
 	}
 
 	//save transation
-	transaction, err := s.TrasactionRepository.SaveTransacion(ctx, payload)
+	transaction, err := s.TrasactionRepository.SaveTransaction(ctx, payload)
 	if err != nil {
 		return res, response.ErrorBuilder(&response.ErrorConstant.InternalServerError, err)
+	}
+
+	for _, i := range cart {
+		_, err := s.TransactionDetailsRepository.SaveTransactionDetails(ctx, &i, transaction.ID)
+		if err != nil {
+			return res, response.ErrorBuilder(&response.ErrorConstant.InternalServerError, err)
+		}
 	}
 
 	res = &dto.TransactionResponse{
@@ -85,34 +102,44 @@ func (s *Service) SaveTransaction(ctx context.Context, payload *dto.TransactionR
 	return res, nil
 }
 
-/*
-func (s *Service) FindCartByUserId(ctx context.Context, userId uint) ([]*dto.CartResponse, error) {
+func (s *Service) FindTransactionByUserId(ctx context.Context, userId uint) ([]*dto.TransactionResponse, error) {
 
-	cart, err := s.CartRepository.FindByUserId(ctx, userId)
+	transactions, err := s.TrasactionRepository.FindByUserId(ctx, userId)
 	if err != nil {
 		return nil, response.ErrorBuilder(&response.ErrorConstant.InternalServerError, err)
 	}
 
-	productRes := []*dto.CartResponse{}
-	if len(cart) != 0 {
-		for _, i := range cart {
+	productRes := []*dto.TransactionResponse{}
+	if len(transactions) != 0 {
 
-			product := dto.ProductResponse{
-				ID:          i.Product.ID,
-				NameProduct: i.Product.NameProduct,
-				Price:       i.Product.PriceProduct,
+		for _, i := range transactions {
+
+			var productDetail []*dto.ProductDetailResponse
+
+			details, err := s.TransactionDetailsRepository.FindByTransactionId(ctx, i.ID)
+			if err != nil {
+				return nil, response.ErrorBuilder(&response.ErrorConstant.InternalServerError, err)
 			}
 
-			productRes = append(productRes, &dto.CartResponse{
-				ID:       i.ID,
-				Product:  product,
-				Quantity: int64(i.Quantity),
-				Price:    int64(i.PriceTotal),
+			for _, d := range details {
+				if d.TransactionId == i.ID {
+					productDetail = append(productDetail, &dto.ProductDetailResponse{
+						ID:          d.Product.ID,
+						NameProduct: d.Product.NameProduct,
+						Quantity:    d.Quantity,
+					})
+				}
+			}
+
+			//masukkan ke productRes
+			productRes = append(productRes, &dto.TransactionResponse{
+				ID:                i.ID,
+				Product:           productDetail,
+				Price:             i.TotalTransaction,
+				StatusTransaction: i.StatusTransaction,
 			})
 		}
 	}
 
 	return productRes, nil
 }
-
-*/

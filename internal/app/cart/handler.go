@@ -10,7 +10,7 @@ import (
 )
 
 type handler struct {
-	service Service
+	service CartService
 }
 
 func NewHandler(f *factory.Factory) *handler {
@@ -29,12 +29,17 @@ func (h *handler) GetCart(c echo.Context) error {
 		return response.ErrorBuilder(&response.ErrorConstant.Unauthorized, err).Send(c)
 	}
 
-	res, err := h.service.FindCartByUserId(c.Request().Context(), jwtClaims.UserID)
+	res, total, err := h.service.FindCartByUserId(c.Request().Context(), jwtClaims.UserID)
 	if err != nil {
 		return response.ErrorResponse(err).Send(c)
 	}
 
-	return response.SuccessResponse(res).Send(c)
+	rspCart := dto.CartAndTotalResponse{
+		CartResponse: res,
+		TotalCart:    total,
+	}
+
+	return response.SuccessResponse(rspCart).Send(c)
 }
 
 func (h *handler) SaveCart(c echo.Context) error {

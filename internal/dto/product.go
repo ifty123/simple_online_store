@@ -10,7 +10,7 @@ type ProductResponse struct {
 type ProductDetailResponse struct {
 	ID          uint   `json:"id"`
 	NameProduct string `json:"name_product"`
-	Price       int64  `json:"price"`
+	Price       int64  `json:"price,omitempty"`
 	Quantity    int    `json:"quantity"`
-	PriceTotal  int64  `json:"price_total"`
+	PriceTotal  int64  `json:"price_total,omitempty"`
 }

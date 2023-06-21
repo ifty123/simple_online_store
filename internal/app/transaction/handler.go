@@ -47,3 +47,21 @@ func (h *handler) SaveTransaction(c echo.Context) error {
 
 	return response.SuccessResponse(res).Send(c)
 }
+
+func (h *handler) GetTransactionByUserId(c echo.Context) error {
+
+	//get auth : userId
+	authHeader := c.Request().Header.Get("Authorization")
+
+	jwtClaims, err := util.ParseJWTToken(authHeader)
+	if err != nil {
+		return response.ErrorBuilder(&response.ErrorConstant.Unauthorized, err).Send(c)
+	}
+
+	res, err := h.service.FindTransactionByUserId(c.Request().Context(), jwtClaims.UserID)
+	if err != nil {
+		return response.ErrorResponse(err).Send(c)
+	}
+
+	return response.SuccessResponse(res).Send(c)
+}

@@ -2,6 +2,11 @@ package dto
 
 import "gorm.io/gorm"
 
+type CartAndTotalResponse struct {
+	CartResponse []*CartResponse `json:"cart"`
+	TotalCart    int64           `json:"total_cart"`
+}
+
 type CartResponse struct {
 	ID       uint            `json:"id"`
 	Username string          `json:"username,omitempty"`
@@ -11,7 +16,7 @@ type CartResponse struct {
 }
 
 type Cart struct {
-	UserId    uint `json:"user_id"`
+	UserId    uint
 	ProductId uint `json:"product_id"`
 	Quantity  int  `json:"quantity"`
 	Price     int64

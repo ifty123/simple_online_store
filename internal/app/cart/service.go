@@ -18,13 +18,13 @@ type Service struct {
 }
 
 type CartService interface {
-	FindCartByUserId(ctx context.Context, userId uint) ([]*dto.CartResponse, error)
+	FindCartByUserId(ctx context.Context, userId uint) ([]*dto.CartResponse, int64, error)
 	SaveCart(ctx context.Context, payload *dto.Cart) (*dto.CartResponse, error)
 	DeleteProductById(ctx context.Context, payload *pkgdto.ByIDRequest) (*dto.CartDeleteResponse, error)
 }
 
-func Newservice(f *factory.Factory) Service {
-	return Service{
+func Newservice(f *factory.Factory) CartService {
+	return &Service{
 		CartRepository:    f.CartRepository,
 		ProductRepository: f.ProductRepository,
 	}
@@ -47,10 +47,16 @@ func (s *Service) SaveCart(ctx context.Context, payload *dto.Cart) (*dto.CartRes
 
 	if cart == nil || cart.ID == 0 {
 		payload.Price = product.PriceProduct
-		_, err := s.CartRepository.SaveCart(ctx, payload)
+		saveCart, err := s.CartRepository.SaveCart(ctx, payload)
 		if err != nil {
 			return res, response.ErrorBuilder(&response.ErrorConstant.InternalServerError, err)
 		}
+
+		//masukkan ke cart untuk response
+		cart.ID = saveCart.ID
+		cart.Quantity = saveCart.Quantity
+		cart.PriceTotal = saveCart.PriceTotal
+
 	} else {
 		cart.Quantity += payload.Quantity
 		cart.PriceTotal = int64(cart.Quantity) * product.PriceProduct
@@ -77,11 +83,13 @@ func (s *Service) SaveCart(ctx context.Context, payload *dto.Cart) (*dto.CartRes
 	return res, nil
 }
 
-func (s *Service) FindCartByUserId(ctx context.Context, userId uint) ([]*dto.CartResponse, error) {
+func (s *Service) FindCartByUserId(ctx context.Context, userId uint) ([]*dto.CartResponse, int64, error) {
+
+	var totalCart int64
 
 	cart, err := s.CartRepository.FindByUserId(ctx, userId)
 	if err != nil {
-		return nil, response.ErrorBuilder(&response.ErrorConstant.InternalServerError, err)
+		return nil, 0, response.ErrorBuilder(&response.ErrorConstant.InternalServerError, err)
 	}
 
 	productRes := []*dto.CartResponse{}
@@ -100,10 +108,12 @@ func (s *Service) FindCartByUserId(ctx context.Context, userId uint) ([]*dto.Car
 				Quantity: int64(i.Quantity),
 				Price:    int64(i.PriceTotal),
 			})
+
+			totalCart += i.PriceTotal
 		}
 	}
 
-	return productRes, nil
+	return productRes, totalCart, nil
 }
 
 func (s *Service) DeleteProductById(ctx context.Context, payload *pkgdto.ByIDRequest) (*dto.CartDeleteResponse, error) {

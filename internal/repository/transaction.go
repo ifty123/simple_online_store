@@ -9,7 +9,8 @@ import (
 )
 
 type TransactionRepository interface {
-	SaveTransacion(ctx context.Context, payload *dto.TransactionReq) (*model.Transaction, error)
+	SaveTransaction(ctx context.Context, payload *dto.TransactionReq) (*model.Transaction, error)
+	FindByUserId(ctx context.Context, userId uint) ([]model.Transaction, error)
 }
 
 type transaction struct {
@@ -22,7 +23,7 @@ func NewTransactionRepository(db *gorm.DB) *transaction {
 	}
 }
 
-func (e *transaction) SaveTransacion(ctx context.Context, payload *dto.TransactionReq) (*model.Transaction, error) {
+func (e *transaction) SaveTransaction(ctx context.Context, payload *dto.TransactionReq) (*model.Transaction, error) {
 	//save ke transaction
 	newTransaction := model.Transaction{
 		UserId:            payload.UserId,
@@ -34,19 +35,14 @@ func (e *transaction) SaveTransacion(ctx context.Context, payload *dto.Transacti
 		return &newTransaction, err
 	}
 
-	//save ke transaction details
-	for _, i := range payload.Cart {
-		newDetails := model.TransactionDetail{
-			TransactionId: newTransaction.ID,
-			ProductId:     i.ProductId,
-			Quantity:      i.Quantity,
-			PriceTotal:    i.Price,
-		}
-
-		if err := e.Db.WithContext(ctx).Save(&newDetails).Error; err != nil {
-			return &newTransaction, err
-		}
-	}
 	return &newTransaction, nil
 
+}
+
+func (e *transaction) FindByUserId(ctx context.Context, userId uint) ([]model.Transaction, error) {
+	var prd []model.Transaction
+	q := e.Db.WithContext(ctx).Model(&model.Transaction{}).Where("user_id = ?", userId)
+
+	err := q.Find(&prd).Error
+	return prd, err
 }
