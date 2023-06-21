@@ -14,7 +14,8 @@ services:
       - db:/var/lib/mysql
   api:
     build:
-      dockerfile: docker/go/Dockerfile
+      context: ./docker/go
+      dockerfile: Dockerfile
     environment:
       DB_HOST: db
       DB_NAME: "${DB_NAME}"
