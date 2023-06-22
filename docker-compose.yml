@@ -12,10 +12,12 @@ services:
       - "${DB_PORT}:${DB_PORT}"
     volumes:
       - db:/var/lib/mysql
+
+  # api service
   api:
     build:
-      context: ./docker/go
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: docker/go/Dockerfile
     environment:
       DB_HOST: db
       DB_NAME: "${DB_NAME}"
