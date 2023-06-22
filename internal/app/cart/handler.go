@@ -19,6 +19,14 @@ func NewHandler(f *factory.Factory) *handler {
 	}
 }
 
+// @Tags Cart
+// @Summary API Get Cart
+// @Router /cart [get]
+// @Security SH256
+// @Accept json
+// @Produces json
+// @Success 200 {object} dto.CartAndTotalResponse
+// @Failure 500 {object} response.Error
 func (h *handler) GetCart(c echo.Context) error {
 
 	//get auth : userId
@@ -42,6 +50,15 @@ func (h *handler) GetCart(c echo.Context) error {
 	return response.SuccessResponse(rspCart).Send(c)
 }
 
+// @Tags Cart
+// @Summary API Save Cart
+// @Router /cart/add [post]
+// @Param request body dto.Cart true "Payload Body [RAW]"
+// @Security SH256
+// @Accept json
+// @Produces json
+// @Success 200 {object} dto.CartResponse
+// @Failure 400 {object} response.Error
 func (h *handler) SaveCart(c echo.Context) error {
 
 	payload := new(dto.Cart)
@@ -68,6 +85,15 @@ func (h *handler) SaveCart(c echo.Context) error {
 	return response.SuccessResponse(res).Send(c)
 }
 
+// @Tags Cart
+// @Summary API Delete Cart
+// @Router /delete/:id [delete]
+// @Param id path int true "cart_id"
+// @Security SH256
+// @Accept json
+// @Produces json
+// @Success 200 {object} dto.CartDeleteResponse
+// @Failure 400 {object} response.Error
 func (h *handler) DeleteCartById(c echo.Context) error {
 
 	payload := new(pkgdto.ByIDRequest)

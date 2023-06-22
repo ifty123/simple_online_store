@@ -12,7 +12,30 @@ import (
 	"github.com/ifty123/simple_online_store/internal/middleware"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
+
+	echoSwagger "github.com/swaggo/echo-swagger"
+
+	_ "github.com/ifty123/simple_online_store/docs"
 )
+
+// @title API for simple store
+// @version 1.0
+// @description This is several endpoint are used in this service.
+// @termsOfService http://swagger.io/terms/
+
+// @contact.name API Support
+// @contact.url http://www.swagger.io/support
+// @contact.email support@swagger.io
+
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host localhost:8080
+// @BasePath /api/v1
+
+//@securityDefinitions.apikey SH256
+//@in header
+//@name your_token(from endpoint auth/login)
 
 func init() {
 	if err := godotenv.Load(); err != nil {
@@ -65,6 +88,8 @@ to use this flag:
 	//factory database
 	f := factory.NewFactory()
 	e := echo.New()
+
+	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
 	e.Use(middleware.CORS)
 	middleware.LogMiddlewares(e)

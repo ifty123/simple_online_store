@@ -18,10 +18,28 @@ func productSeeder(db *gorm.DB) {
 			CategoryId:   1,
 		},
 		{
-			NameProduct:  "Sport Air",
+			NameProduct:  "Sneakers Pria",
 			PriceProduct: 100000,
 			Common:       model.Common{ID: 2, CreatedAt: now, UpdatedAt: now},
 			CategoryId:   1,
+		},
+		{
+			NameProduct:  "Kemeja Denim",
+			PriceProduct: 80000,
+			Common:       model.Common{ID: 3, CreatedAt: now, UpdatedAt: now},
+			CategoryId:   2,
+		},
+		{
+			NameProduct:  "Kemeja Lengan Panjang Ufaira",
+			PriceProduct: 80000,
+			Common:       model.Common{ID: 4, CreatedAt: now, UpdatedAt: now},
+			CategoryId:   2,
+		},
+		{
+			NameProduct:  "Topi Hitam",
+			PriceProduct: 50000,
+			Common:       model.Common{ID: 5, CreatedAt: now, UpdatedAt: now},
+			CategoryId:   3,
 		},
 	}
 

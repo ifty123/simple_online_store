@@ -18,14 +18,14 @@ type Service struct {
 	TransactionDetailsRepository repository.TransactionDetailsRepository
 }
 
-type CartService interface {
+type TransactionService interface {
 	SaveTransaction(ctx context.Context, payload *dto.TransactionReq) (*dto.TransactionResponse, error)
 	FindTransactionByUserId(ctx context.Context, userId uint) ([]*dto.TransactionResponse, error)
 	UpdateTransactionById(ctx context.Context, userId, transactionId uint) (*dto.TransactionResponse, error)
 }
 
-func Newservice(f *factory.Factory) Service {
-	return Service{
+func Newservice(f *factory.Factory) TransactionService {
+	return &Service{
 		TrasactionRepository:         f.TransactionRepository,
 		ProductRepository:            f.ProductRepository,
 		CartRepository:               f.CartRepository,
@@ -56,8 +56,8 @@ func (s *Service) SaveTransaction(ctx context.Context, payload *dto.TransactionR
 			productId = append(productId, i.ProductId)
 			productRes[i.ProductId] = &dto.ProductDetailResponse{
 				ID:         i.ProductId,
-				PriceTotal: i.PriceTotal,
 				Quantity:   i.Quantity,
+				PriceTotal: i.PriceTotal,
 			}
 
 			payload.Total += i.PriceTotal
@@ -128,6 +128,8 @@ func (s *Service) FindTransactionByUserId(ctx context.Context, userId uint) ([]*
 						ID:          d.Product.ID,
 						NameProduct: d.Product.NameProduct,
 						Quantity:    d.Quantity,
+						Price:       d.Product.PriceProduct,
+						PriceTotal:  d.PriceTotal,
 					})
 				}
 			}

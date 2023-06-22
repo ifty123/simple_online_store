@@ -15,6 +15,14 @@ func categorySeeder(db *gorm.DB) {
 			NameCategory: "Sepatu",
 			Common:       model.Common{ID: 1, CreatedAt: now, UpdatedAt: now},
 		},
+		{
+			NameCategory: "Kemeja",
+			Common:       model.Common{ID: 2, CreatedAt: now, UpdatedAt: now},
+		},
+		{
+			NameCategory: "Aksesoris",
+			Common:       model.Common{ID: 3, CreatedAt: now, UpdatedAt: now},
+		},
 	}
 
 	if err := db.Create(&category).Error; err != nil {

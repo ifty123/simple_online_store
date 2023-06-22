@@ -9,6 +9,6 @@ type JWTClaims struct {
 }
 
 type EmailAndPasswordReq struct {
-	Email    string `json:"email" validate:"required,email"`
-	Password string `json:"password" validate:"required"`
+	Email    string `json:"email" validate:"required,email" example:"example@gmail.com"`
+	Password string `json:"password" validate:"required" example:"P@sswo4d"`
 }

@@ -15,4 +15,4 @@ WORKDIR /app
 COPY --from=builder store-service .
 COPY .env .
 EXPOSE 8080
-CMD ["./store-service", "-m=migrate"]
+CMD ["./store-service", "-m=migrate -s=all"]

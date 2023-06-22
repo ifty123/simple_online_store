@@ -5,8 +5,8 @@ import (
 )
 
 type Pagination struct {
-	Page     *int `query:"page" json:"page"`
-	PageSize *int `query:"page_size" json:"page_size"`
+	Page     *int `query:"page" json:"page" example:"1"`
+	PageSize *int `query:"page_size" json:"page_size" example:"10"`
 }
 
 type SearchGetRequest struct {
@@ -16,15 +16,15 @@ type SearchGetRequest struct {
 }
 
 type SearchGetResponse[T any] struct {
-	Data           []T `json:"data"`
-	PaginationInfo PaginationInfo
+	Data           []T            `json:"data"`
+	PaginationInfo PaginationInfo `json:"pagination_info"`
 }
 
 type PaginationInfo struct {
 	*Pagination
-	Count       int  `json:"count"`
+	Count       int  `json:"count" example:"20"`
 	MoreRecords bool `json:"more_records,omitempty"`
-	TotalPage   int  `json:"total_page"`
+	TotalPage   int  `json:"total_page" example:"2"`
 }
 
 type ByIDRequest struct {

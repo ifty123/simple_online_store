@@ -11,8 +11,8 @@ import (
 )
 
 type errorResponse struct {
-	Success bool   `json:"success" default:"true"`
-	Message string `json:"message" default:"true"`
+	Success bool   `json:"success" default:"true" example:"false"`
+	Message string `json:"message" default:"true" example:"Failed"`
 	Error   string `json:"error"`
 }
 

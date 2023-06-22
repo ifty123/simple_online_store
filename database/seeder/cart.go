@@ -14,8 +14,8 @@ func cartSeeder(db *gorm.DB) {
 		{
 			UserId:     1,
 			ProductId:  1,
-			Quantity:   1,
-			PriceTotal: 12000,
+			Quantity:   4,
+			PriceTotal: 480000,
 			Common:     model.Common{ID: 1, CreatedAt: now, UpdatedAt: now},
 		},
 	}

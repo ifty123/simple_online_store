@@ -20,6 +20,16 @@ func NewHandler(f *factory.Factory) *handler {
 	}
 }
 
+// @Tags Product
+// @Summary API Get Products
+// @Router /product [get]
+// @Param category query int false "category_id"
+// @Param page query int true "page"
+// @Param page_size query int true "page_size"
+// @Accept json
+// @Produces json
+// @Success 200 {object} pkgdto.SearchGetResponse[dto.ProductResponse]
+// @Failure 400 {object} response.Error
 func (h *handler) GetProducts(c echo.Context) error {
 	payload := new(pkgdto.SearchGetRequest)
 	if err := c.Bind(payload); err != nil {

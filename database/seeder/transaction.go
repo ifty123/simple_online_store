@@ -14,7 +14,7 @@ func transactionSeeder(db *gorm.DB) {
 	var transaction = []model.Transaction{
 		{
 			UserId:            1,
-			TotalTransaction:  120000,
+			TotalTransaction:  480000,
 			StatusTransaction: dto.BELUM_DIBAYAR,
 			Common:            model.Common{ID: 1, CreatedAt: now, UpdatedAt: now},
 		},

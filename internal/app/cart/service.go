@@ -34,6 +34,11 @@ func (s *Service) SaveCart(ctx context.Context, payload *dto.Cart) (*dto.CartRes
 
 	var res *dto.CartResponse
 
+	//cek payload quantity, jika < 0, maka default ke 1
+	if payload.Quantity <= 0 {
+		payload.Quantity = 1
+	}
+
 	cart, err := s.CartRepository.FindByProductId(ctx, payload.ProductId, payload.UserId)
 	if err != nil {
 		log.Println("error no found : ", err)
@@ -54,8 +59,8 @@ func (s *Service) SaveCart(ctx context.Context, payload *dto.Cart) (*dto.CartRes
 
 		//masukkan ke cart untuk response
 		cart.ID = saveCart.ID
-		cart.Quantity = saveCart.Quantity
 		cart.PriceTotal = saveCart.PriceTotal
+		cart.Quantity = saveCart.Quantity
 
 	} else {
 		cart.Quantity += payload.Quantity
@@ -132,7 +137,7 @@ func (s *Service) DeleteProductById(ctx context.Context, payload *pkgdto.ByIDReq
 	result := &dto.CartDeleteResponse{
 		ID:        cart.ID,
 		ProductId: cart.ProductId,
-		DeletedAt: cart.DeletedAt,
+		Deleted:   cart.DeletedAt.Time,
 	}
 
 	return result, nil

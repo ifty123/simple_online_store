@@ -17,6 +17,14 @@ func NewHandler(f *factory.Factory) *handler {
 	}
 }
 
+// @Tags Auth
+// @Summary API Login By Email And Password
+// @Router /auth/login [post]
+// @Param request body dto.EmailAndPasswordReq true "Payload Body [RAW]"
+// @Accept json
+// @Produces json
+// @Success 200 {object} dto.UserWithJWTResponse
+// @Failure 400 {object} response.Error
 func (h *handler) LoginByEmailAndPassword(c echo.Context) error {
 	payload := new(dto.EmailAndPasswordReq)
 	if err := c.Bind(payload); err != nil {
@@ -35,6 +43,14 @@ func (h *handler) LoginByEmailAndPassword(c echo.Context) error {
 	return response.SuccessResponse(employee).Send(c)
 }
 
+// @Tags Auth
+// @Summary API Register By Email And Password
+// @Router /auth/signup [post]
+// @Param request body dto.RegisterUserReq true "Payload Body [RAW]"
+// @Accept json
+// @Produces json
+// @Success 200 {object} dto.UserResponse
+// @Failure 400 {object} response.Error
 func (h *handler) RegisterByEmailAndPassword(c echo.Context) error {
 	payload := new(dto.RegisterUserReq)
 	if err := c.Bind(payload); err != nil {

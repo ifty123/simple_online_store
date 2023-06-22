@@ -1,0 +1,439 @@
+basePath: /api/v1
+definitions:
+  dto.Cart:
+    properties:
+      product_id:
+        example: 1
+        type: integer
+      quantity:
+        example: 1
+        type: integer
+    type: object
+  dto.CartAndTotalResponse:
+    properties:
+      cart:
+        items:
+          $ref: '#/definitions/dto.CartResponse'
+        type: array
+      total_cart:
+        example: 80000
+        type: integer
+    type: object
+  dto.CartDeleteResponse:
+    properties:
+      deleted_at:
+        type: string
+      id:
+        example: 1
+        type: integer
+      product_id:
+        example: 1
+        type: integer
+    type: object
+  dto.CartResponse:
+    properties:
+      cart_product:
+        $ref: '#/definitions/dto.ProductResponse'
+      id:
+        example: 1
+        type: integer
+      price_product:
+        example: 80000
+        type: integer
+      quantity_product:
+        example: 1
+        type: integer
+    type: object
+  dto.EmailAndPasswordReq:
+    properties:
+      email:
+        example: example@gmail.com
+        type: string
+      password:
+        example: P@sswo4d
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  dto.PaginationInfo:
+    properties:
+      count:
+        example: 20
+        type: integer
+      more_records:
+        type: boolean
+      page:
+        example: 1
+        type: integer
+      page_size:
+        example: 10
+        type: integer
+      total_page:
+        example: 2
+        type: integer
+    type: object
+  dto.ProductDetailResponse:
+    properties:
+      id:
+        example: 1
+        type: integer
+      name_product:
+        example: Kemeja Denim
+        type: string
+      price:
+        example: 80000
+        type: integer
+      price_total:
+        example: 320000
+        type: integer
+      quantity:
+        example: 4
+        type: integer
+    type: object
+  dto.ProductResponse:
+    properties:
+      category:
+        example: Kemeja
+        type: string
+      id:
+        example: 1
+        type: integer
+      name_product:
+        example: Kemeja Denim
+        type: string
+      price:
+        example: 80000
+        type: integer
+    type: object
+  dto.RegisterUserReq:
+    properties:
+      email:
+        example: example@gmail.com
+        type: string
+      password:
+        example: P@sswo4d
+        type: string
+      username:
+        example: example
+        type: string
+    required:
+    - email
+    - password
+    - username
+    type: object
+  dto.SearchGetResponse-dto_ProductResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/dto.ProductResponse'
+        type: array
+      pagination_info:
+        $ref: '#/definitions/dto.PaginationInfo'
+    type: object
+  dto.TransactionReq:
+    properties:
+      cart_id:
+        description: Cart   []Cart
+        items:
+          type: integer
+        type: array
+    required:
+    - cart_id
+    type: object
+  dto.TransactionResponse:
+    properties:
+      cart_product:
+        items:
+          $ref: '#/definitions/dto.ProductDetailResponse'
+        type: array
+      id:
+        example: 1
+        type: integer
+      status_transaction:
+        example: belum dibayar
+        type: string
+      total_transaction:
+        example: 320000
+        type: integer
+    type: object
+  dto.UserResponse:
+    properties:
+      email:
+        example: example@gmail.com
+        type: string
+      id:
+        example: 1
+        type: integer
+      username:
+        example: example
+        type: string
+    type: object
+  dto.UserWithJWTResponse:
+    properties:
+      email:
+        example: example@gmail.com
+        type: string
+      id:
+        example: 1
+        type: integer
+      jwt:
+        type: string
+      username:
+        example: example
+        type: string
+    type: object
+  response.Error:
+    properties:
+      code:
+        type: integer
+      errorMessage: {}
+      response:
+        $ref: '#/definitions/response.errorResponse'
+    type: object
+  response.errorResponse:
+    properties:
+      error:
+        type: string
+      message:
+        default: "true"
+        example: Failed
+        type: string
+      success:
+        default: true
+        example: false
+        type: boolean
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is several endpoint are used in this service.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: API for simple store
+  version: "1.0"
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Payload Body [RAW]
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.EmailAndPasswordReq'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.UserWithJWTResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Error'
+      summary: API Login By Email And Password
+      tags:
+      - Auth
+  /auth/signup:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Payload Body [RAW]
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RegisterUserReq'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.UserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Error'
+      summary: API Register By Email And Password
+      tags:
+      - Auth
+  /cart:
+    get:
+      consumes:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.CartAndTotalResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Error'
+      security:
+      - SH256: []
+      summary: API Get Cart
+      tags:
+      - Cart
+  /cart/add:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Payload Body [RAW]
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.Cart'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.CartResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Error'
+      security:
+      - SH256: []
+      summary: API Save Cart
+      tags:
+      - Cart
+  /delete/:id:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: cart_id
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.CartDeleteResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Error'
+      security:
+      - SH256: []
+      summary: API Delete Cart
+      tags:
+      - Cart
+  /product:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: category_id
+        in: query
+        name: category
+        type: integer
+      - description: page
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: page_size
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.SearchGetResponse-dto_ProductResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Error'
+      summary: API Get Products
+      tags:
+      - Product
+  /transaction:
+    get:
+      consumes:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.TransactionResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Error'
+      security:
+      - SH256: []
+      summary: API Get Transaction
+      tags:
+      - Transaction
+  /transaction/add:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Payload Body [RAW]
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.TransactionReq'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.TransactionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Error'
+      security:
+      - SH256: []
+      summary: API Save Transaction
+      tags:
+      - Transaction
+  /transaction/update/:id:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: transaction_id
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.TransactionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Error'
+      security:
+      - SH256: []
+      summary: API Update Transaction
+      tags:
+      - Transaction
+securityDefinitions:
+  SH256:
+    in: header
+    name: your_token(from endpoint auth/login)
+    type: apiKey
+swagger: "2.0"
