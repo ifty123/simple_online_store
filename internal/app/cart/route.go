@@ -12,6 +12,6 @@ func (h *handler) Route(g *echo.Group) {
 	g.Use(middleware.JWTMiddleware(dto.JWTClaims{}, util.JWT_SECRET))
 
 	g.GET("", h.GetCart)
-	g.PUT("/add", h.SaveCart)
+	g.POST("/add", h.SaveCart)
 	g.DELETE("/delete/:id", h.DeleteCartById)
 }
