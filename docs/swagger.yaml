@@ -44,6 +44,15 @@ definitions:
         example: 1
         type: integer
     type: object
+  dto.CategoryResponse:
+    properties:
+      id:
+        example: 1
+        type: integer
+      name_category:
+        example: Kemeja
+        type: string
+    type: object
   dto.EmailAndPasswordReq:
     properties:
       email:
@@ -360,6 +369,24 @@ paths:
           schema:
             $ref: '#/definitions/response.Error'
       summary: API Get Products
+      tags:
+      - Product
+  /product/category:
+    get:
+      consumes:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.CategoryResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Error'
+      summary: API Get Category
       tags:
       - Product
   /transaction:

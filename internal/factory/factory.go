@@ -11,6 +11,7 @@ type Factory struct {
 	CartRepository               repository.CartRepository
 	TransactionRepository        repository.TransactionRepository
 	TransactionDetailsRepository repository.TransactionDetailsRepository
+	CategoryRepository           repository.CategoryRepository
 }
 
 func NewFactory() *Factory {
@@ -21,5 +22,6 @@ func NewFactory() *Factory {
 		repository.NewCartRepository(db),
 		repository.NewTransactionRepository(db),
 		repository.NewTransactionDetailsRepository(db),
+		repository.NewcategoryRepository(db),
 	}
 }

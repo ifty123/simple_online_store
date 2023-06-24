@@ -254,6 +254,34 @@ const docTemplate = `{
                 }
             }
         },
+        "/product/category": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Product"
+                ],
+                "summary": "API Get Category",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.CategoryResponse"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/transaction": {
             "get": {
                 "security": [
@@ -430,6 +458,19 @@ const docTemplate = `{
                 "quantity_product": {
                     "type": "integer",
                     "example": 1
+                }
+            }
+        },
+        "dto.CategoryResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "name_category": {
+                    "type": "string",
+                    "example": "Kemeja"
                 }
             }
         },

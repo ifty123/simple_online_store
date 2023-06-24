@@ -48,3 +48,20 @@ func (h *handler) GetProducts(c echo.Context) error {
 
 	return response.CustomSuccessBuilder(http.StatusOK, res.Data, "Get product success", &res.PaginationInfo).Send(c)
 }
+
+// @Tags Product
+// @Summary API Get Category
+// @Router /product/category [get]
+// @Accept json
+// @Produces json
+// @Success 200 {array} dto.CategoryResponse
+// @Failure 400 {object} response.Error
+func (h *handler) GetCategory(c echo.Context) error {
+
+	res, err := h.service.GetAllCategory(c.Request().Context())
+	if err != nil {
+		return response.ErrorResponse(err).Send(c)
+	}
+
+	return response.SuccessResponse(res).Send(c)
+}

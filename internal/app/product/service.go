@@ -12,16 +12,19 @@ import (
 )
 
 type Service struct {
-	ProductRepository repository.ProductRepository
+	ProductRepository  repository.ProductRepository
+	CategoryRepository repository.CategoryRepository
 }
 
 type ProductService interface {
 	FindByCategory(ctx context.Context, category uint, pagination *pkgdto.Pagination) (*pkgdto.SearchGetResponse[dto_internal.ProductResponse], error)
+	GetAllCategory(ctx context.Context) ([]*dto_internal.CategoryResponse, error)
 }
 
 func Newservice(f *factory.Factory) Service {
 	return Service{
-		ProductRepository: f.ProductRepository,
+		ProductRepository:  f.ProductRepository,
+		CategoryRepository: f.CategoryRepository,
 	}
 }
 
@@ -48,4 +51,22 @@ func (s *Service) FindByCategory(ctx context.Context, category uint, pagination 
 	res.PaginationInfo = *paginate
 
 	return res, nil
+}
+
+func (s *Service) GetAllCategory(ctx context.Context) ([]*dto_internal.CategoryResponse, error) {
+
+	category, err := s.CategoryRepository.GetAll(ctx)
+	if err != nil {
+		return nil, response.ErrorBuilder(&response.ErrorConstant.InternalServerError, err)
+	}
+
+	productRes := []*dto_internal.CategoryResponse{}
+	for _, i := range category {
+		productRes = append(productRes, &dto_internal.CategoryResponse{
+			ID:           i.ID,
+			NameCategory: i.NameCategory,
+		})
+	}
+
+	return productRes, nil
 }

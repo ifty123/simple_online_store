@@ -15,3 +15,8 @@ type ProductDetailResponse struct {
 	Quantity    int    `json:"quantity" example:"4"`
 	PriceTotal  int64  `json:"price_total,omitempty" example:"320000"`
 }
+
+type CategoryResponse struct {
+	ID           uint   `json:"id" example:"1"`
+	NameCategory string `json:"name_category" example:"Kemeja"`
+}
