@@ -24,7 +24,7 @@ Is a simple project golang application with Echo Go web framework using MySQL an
 - Feature **MySQL 5.7**
 - Environment support
 
-### Installation
+## Installation
 
 ```
 $ go get https://github.com/ifty123/simple_online_store.git
