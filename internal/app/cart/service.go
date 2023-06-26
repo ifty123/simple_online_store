@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 
+	"github.com/google/uuid"
 	"github.com/ifty123/simple_online_store/internal/dto"
 	"github.com/ifty123/simple_online_store/internal/factory"
 	"github.com/ifty123/simple_online_store/internal/repository"
@@ -15,6 +16,7 @@ import (
 type Service struct {
 	CartRepository    repository.CartRepository
 	ProductRepository repository.ProductRepository
+	LogRepository     repository.LogRepository
 }
 
 type CartService interface {
@@ -27,6 +29,7 @@ func Newservice(f *factory.Factory) CartService {
 	return &Service{
 		CartRepository:    f.CartRepository,
 		ProductRepository: f.ProductRepository,
+		LogRepository:     f.LogRepository,
 	}
 }
 
@@ -69,6 +72,13 @@ func (s *Service) SaveCart(ctx context.Context, payload *dto.Cart) (*dto.CartRes
 		if err != nil {
 			return res, response.ErrorBuilder(&response.ErrorConstant.InternalServerError, err)
 		}
+	}
+
+	//save log
+	id := uuid.New()
+	err = s.LogRepository.SaveLog(ctx, id.String(), "Success save cart", cart.UserId)
+	if err != nil {
+		log.Println("error log save :", err)
 	}
 
 	productDto := dto.ProductResponse{

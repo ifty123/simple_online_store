@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"os"
+	"sync"
 
 	"github.com/ifty123/simple_online_store/database"
 	"github.com/ifty123/simple_online_store/database/migration"
@@ -37,15 +38,22 @@ import (
 //@in header
 //@name your_token(from endpoint auth/login)
 
+var (
+	once sync.Once
+)
+
 func init() {
 	if err := godotenv.Load(); err != nil {
 		panic(err)
 	}
-	database.GetConnection()
 }
 
 func main() {
-	database.CreateConnection()
+
+	once.Do(func() {
+		database.CreateConnection()
+		database.CreateConnectionLog()
+	})
 
 	var m string // for check migration
 	var s string // for check seeder

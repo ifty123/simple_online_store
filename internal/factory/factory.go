@@ -12,10 +12,12 @@ type Factory struct {
 	TransactionRepository        repository.TransactionRepository
 	TransactionDetailsRepository repository.TransactionDetailsRepository
 	CategoryRepository           repository.CategoryRepository
+	LogRepository                repository.LogRepository
 }
 
 func NewFactory() *Factory {
 	db := database.GetConnection()
+	dbMongo := database.GetConnectionLog()
 	return &Factory{
 		repository.NewUserRepository(db),
 		repository.NewProductRepository(db),
@@ -23,5 +25,6 @@ func NewFactory() *Factory {
 		repository.NewTransactionRepository(db),
 		repository.NewTransactionDetailsRepository(db),
 		repository.NewcategoryRepository(db),
+		repository.NewLogRepository(dbMongo),
 	}
 }
